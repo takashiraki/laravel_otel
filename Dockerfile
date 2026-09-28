@@ -1,0 +1,51 @@
+
+FROM php:8.4-apache
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/symfony/stable/setup.deb.sh' | bash \
+    && apt-get update \
+    && apt-get install -y unzip libpq-dev git vim sqlite3 libsqlite3-dev libicu-dev gh tmux lazygit symfony-cli default-jdk graphviz fonts-ipafont \
+    && pecl install xdebug opentelemetry redis\
+    && docker-php-ext-enable xdebug opentelemetry redis \
+    && docker-php-ext-install mysqli pdo_mysql opcache intl pcntl \
+    && composer global require laravel/installer \
+    && curl -Lo /usr/local/bin/phpactor https://github.com/phpactor/phpactor/releases/latest/download/phpactor.phar \
+    && chmod +x /usr/local/bin/phpactor \
+    && curl -Lo /usr/local/bin/php-cs-fixer https://github.com/PHP-CS-Fixer/PHP-CS-Fixer/releases/latest/download/php-cs-fixer.phar \
+    && chmod +x /usr/local/bin/php-cs-fixer \
+    && (type -p wget >/dev/null || (apt-get update && apt-get install wget -y)) \
+    && mkdir -p -m 755 /etc/apt/keyrings \
+    && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    && cat $out > /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+    && mkdir -p -m 755 /etc/apt/sources.list.d \
+    && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
+    && a2enmod rewrite
+
+ENV PATH="/root/.composer/vendor/bin:${PATH}"
+
+ARG APP_ENV=dev
+
+COPY .docker/php.ini /usr/local/etc/php/php.ini
+COPY .docker/php-prod.ini /usr/local/etc/php/php-prod.ini
+
+RUN if [ "$APP_ENV" = "prod" ]; then \
+        cp /usr/local/etc/php/php-prod.ini /usr/local/etc/php/php.ini; \
+        docker-php-ext-disable xdebug; \
+    fi; \
+    rm -f /usr/local/etc/php/php-prod.ini
+
+COPY .docker/000-default.conf /etc/apache2/sites-available/
+COPY . /var/www/html/
+
+COPY --from=node:22 /usr/local/bin /usr/local/bin
+COPY --from=node:22 /usr/local/lib /usr/local/lib
+
+WORKDIR /var/www/html
+
+RUN if [ "$APP_ENV" = "prod" ]; then \
+        composer install --no-dev --optimize-autoloader --no-scripts && \
+        php bin/console tailwind:build && \
+        php bin/console asset-map:compile; \
+    fi
+
