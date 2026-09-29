@@ -6,10 +6,10 @@ class MessageCollectionRequest
 {
     public function __construct(
         public readonly string $key,
-        public readonly string $val
+        public readonly ?string $val
     ) {}
 
-    public static function create(string $key, string $val): self
+    public static function create(string $key, ?string $val = null): self
     {
         return new self(key: $key, val: $val);
     }
