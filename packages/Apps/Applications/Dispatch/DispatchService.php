@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Packages\Apps\Applications\Dispatch;
 
 use App\Jobs\MyJob;

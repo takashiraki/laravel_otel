@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Packages\Libs\Collection\MessageCollection;
 
 interface IMessageCollection

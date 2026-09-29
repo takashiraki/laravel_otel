@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Packages\Apps\Applications\Pull;
 
 use Packages\Apps\UseCases\Pull\IPullService;
@@ -12,12 +14,12 @@ class PullService implements IPullService
 {
     public function __construct(
         private IMessageCollection $message
-    ) {}
+    ) {
+    }
 
     public function exec(PullServiceRequest $request): PullServiceResponse
     {
         $this->message->pop(MessageCollectionRequest::create('key'));
-
 
         return PullServiceResponse::create(true);
     }

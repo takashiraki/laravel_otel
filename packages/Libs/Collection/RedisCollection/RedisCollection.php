@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Packages\Libs\Collection\RedisCollection;
 
 use Illuminate\Support\Facades\Redis;
-use Override;
 use Packages\Libs\Collection\MessageCollection\IMessageCollection;
 use Packages\Libs\Collection\MessageCollection\MessageCollectionRequest;
 use Packages\Libs\Collection\MessageCollection\MessageCollectionResponse;
