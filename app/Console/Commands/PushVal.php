@@ -20,7 +20,7 @@ class PushVal extends Command
      */
     public function handle(
         IPushService $service
-    ) {
+    ): void {
         $service->exec(PushServiceRequest::create((string)Str::uuid()));
     }
 }

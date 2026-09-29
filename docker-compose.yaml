@@ -20,6 +20,10 @@ services:
     volumes:
       - ./${REPOSITORY}:/var/www/html
       - vendor-store:/var/www/html/vendor
+      # neovim(ホスト)で docker 経由の phpactor を使う際、rootUri/定義ジャンプ先のパスを
+      # ホスト側パスと一致させるためのミラーマウント (未設定時はダミーのパスにマウント)
+      - ./${REPOSITORY}:${HOST_PROJECT_PATH:-/mnt/host-project}
+      - vendor-store:${HOST_PROJECT_PATH:-/mnt/host-project}/vendor
     networks:
       - my_laravel_network
       - my_infra_network
