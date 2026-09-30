@@ -1,0 +1,22 @@
+# VCS
+.git
+.gitignore
+
+# Local env / secrets (never bake into an image)
+.env.local
+.env.*.local
+
+# Dev databases / user data
+databases/*.sqlite
+
+# Dependencies (installed during build)
+vendor/
+node_modules/
+
+# Dev tooling / caches
+.php-cs-fixer.cache
+.idea/
+.vscode/
+.claude/
+.devcontainer/
+tests/

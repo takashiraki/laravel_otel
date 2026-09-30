@@ -9,13 +9,38 @@ services:
       LETSENCRYPT_TEST: ${LETSENCRYPT_TEST}
       CERT_NAME: ${CERT_NAME}
       TZ: ${TZ}
+      OTEL_PHP_AUTOLOAD_ENABLED: ${OTEL_PHP_AUTOLOAD_ENABLED:-true}
+      OTEL_SERVICE_NAME: ${OTEL_SERVICE_NAME:-my_laravel}
+      OTEL_TRACES_EXPORTER: ${OTEL_TRACES_EXPORTER:-otlp}
+      OTEL_METRICS_EXPORTER: ${OTEL_METRICS_EXPORTER:-none}
+      OTEL_LOGS_EXPORTER: ${OTEL_LOGS_EXPORTER:-none}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-http://otel-collector:4318}
+      OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-http/protobuf}
+      OTEL_PROPAGATORS: ${OTEL_PROPAGATORS:-tracecontext,baggage}
     volumes:
       - ./${REPOSITORY}:/var/www/html
       - vendor-store:/var/www/html/vendor
+      # neovim(ホスト)で docker 経由の phpactor を使う際、rootUri/定義ジャンプ先のパスを
+      # ホスト側パスと一致させるためのミラーマウント (未設定時はダミーのパスにマウント)
+      - ./${REPOSITORY}:${HOST_PROJECT_PATH:-/mnt/host-project}
+      - vendor-store:${HOST_PROJECT_PATH:-/mnt/host-project}/vendor
     networks:
       - my_laravel_network
       - my_infra_network
       - my_proxy_network
+
+  local-composer:
+    image: composer:latest
+    container_name: ${CONTAINER_NAME}-composer
+    working_dir: /var/www/html
+    environment:
+      COMPOSER_IGNORE_PLATFORM_REQ: ext-opentelemetry
+      OTEL_PHP_DISABLED_INSTRUMENTATIONS: laravel
+    volumes:
+      - ./${REPOSITORY}:/var/www/html
+    profiles:
+      - tools
+    entrypoint: [ "composer" ]
 
 volumes:
   vendor-store:
