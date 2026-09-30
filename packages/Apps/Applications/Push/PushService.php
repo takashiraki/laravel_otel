@@ -16,15 +16,14 @@ class PushService implements IPushService
     public function __construct(
         private IMessageCollection $message,
         private IStr $str
-    ) {
-    }
+    ) {}
 
     public function exec(
         PushServiceRequest $request,
     ): PushServiceResponse {
         $key = $this->str->uuid();
 
-        $this->message->push(MessageCollectionRequest::create(($key)));
-        return PushServiceResponse::create($key);
+        $this->message->push(MessageCollectionRequest::create('hogehoge', $key));
+        return PushServiceResponse::create(true);
     }
 }

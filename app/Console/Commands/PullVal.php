@@ -21,6 +21,7 @@ class PullVal extends Command
     public function handle(
         IPullService $service
     ) {
-        $service->exec(PullServiceRequest::create((string)Str::uuid()));
+        $response = $service->exec(PullServiceRequest::create((string)Str::uuid()));
+        $this->info($response->val);
     }
 }

@@ -14,13 +14,11 @@ class PullService implements IPullService
 {
     public function __construct(
         private IMessageCollection $message
-    ) {
-    }
+    ) {}
 
     public function exec(PullServiceRequest $request): PullServiceResponse
     {
-        $this->message->pop(MessageCollectionRequest::create('key'));
-
-        return PullServiceResponse::create(true);
+        $message = $this->message->pop(MessageCollectionRequest::create(key: 'hogehoge'));
+        return PullServiceResponse::create(result: true, val: $message->id);
     }
 }

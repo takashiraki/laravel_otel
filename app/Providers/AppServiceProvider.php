@@ -6,8 +6,10 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Packages\Apps\Applications\Dispatch\DispatchService;
+use Packages\Apps\Applications\Pull\PullService;
 use Packages\Apps\Applications\Push\PushService;
 use Packages\Apps\UseCases\Dispatch\IDispatchService;
+use Packages\Apps\UseCases\Pull\IPullService;
 use Packages\Apps\UseCases\Push\IPushService;
 use Packages\Libs\Collection\MessageCollection\IMessageCollection;
 use Packages\Libs\Collection\RedisCollection\RedisCollection;
@@ -34,6 +36,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             IPushService::class,
             PushService::class
+        );
+
+        $this->app->bind(
+            IPullService::class,
+            PullService::class
         );
 
         $this->app->bind(
