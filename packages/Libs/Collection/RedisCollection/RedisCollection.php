@@ -18,6 +18,8 @@ class RedisCollection implements IMessageCollection
 
     public function pop(MessageCollectionRequest $request): MessageCollectionResponse
     {
-        return MessageCollectionResponse::create(Redis::connection('cache')->lPop($request->key, $request->val));
+        $val = Redis::connection('cache')->lPop($request->key, $request->val);
+
+        return MessageCollectionResponse::create($val === false ? null : $val);
     }
 }

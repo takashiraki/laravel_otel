@@ -19,6 +19,11 @@ class PullService implements IPullService
     public function exec(PullServiceRequest $request): PullServiceResponse
     {
         $message = $this->message->pop(MessageCollectionRequest::create(key: 'hogehoge'));
+
+        if ($message->id === null) {
+            return PullServiceResponse::create(result: false);
+        }
+
         return PullServiceResponse::create(result: true, val: $message->id);
     }
 }
