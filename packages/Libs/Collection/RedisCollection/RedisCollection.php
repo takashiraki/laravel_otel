@@ -13,12 +13,11 @@ class RedisCollection implements IMessageCollection
 {
     public function push(MessageCollectionRequest $request): void
     {
-        Redis::rPush($request->key, $request->val);
+        Redis::connection('cache')->rPush($request->key, $request->val);
     }
 
     public function pop(MessageCollectionRequest $request): MessageCollectionResponse
     {
-        dd(Redis::lPop($request->key, $request->val));
-        return MessageCollectionResponse::create(Redis::lPop($request->key, $request->val));
+        return MessageCollectionResponse::create(Redis::connection('cache')->lPop($request->key, $request->val));
     }
 }
